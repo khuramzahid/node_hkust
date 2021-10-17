@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const models = require('../models');
 
 const dishRouter = express.Router();
 
@@ -11,8 +12,14 @@ dishRouter.route('/')
     res.setHeader('Content-Type', 'text/plain');
     next();
 })
-.get((req,res,next) => {
-    res.end('Will send all the dishes to you!');
+.get(async (req,res,next) => {
+    try {
+        const dishes = await models.Dish.findAll({});
+        res.json(dishes);
+    }
+    catch(error) {
+        next(error);
+    }
 })
 .post((req, res, next) => {
     res.end('Will add the dish: ' + req.body.name + ' with details: ' + req.body.description);
@@ -26,8 +33,26 @@ dishRouter.route('/')
 });
 
 dishRouter.route('/:dishId')
-.get((req,res,next) => {
-    res.end('Will send details of the dish: ' + req.params.dishId +' to you!');
+.get(async (req,res,next) => {
+    try {
+        const dish = await models.Dish.findOne({
+            where: {
+                id: req.params.dishId
+            }
+        });
+        const comments = await models.Comment.findAll({
+            where: {
+                dishId: req.params.dishId
+            }
+        })
+        res.json({
+            dish,
+            comments
+        });
+    }
+    catch(error) {
+        next(error);
+    }
 })
 .post((req, res, next) => {
     res.statusCode = 403;
