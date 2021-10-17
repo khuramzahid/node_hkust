@@ -1,70 +1,62 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const models = require('../models');
 
 const dishRouter = express.Router();
 
 dishRouter.use(bodyParser.json());
 
+const {
+    allAction,
+    getDishes,
+    addDish,
+    deleteDishes,
+    getDish,
+    updateDish,
+    deleteDish,
+    getDishComments,
+    addDishComment,
+    deleteDishComments,
+    getDishComment,
+    updateDishComment,
+    deleteDishComment
+} = require('../dao/dishes');
+
 dishRouter.route('/')
-.all((req,res,next) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    next();
-})
-.get(async (req,res,next) => {
-    try {
-        const dishes = await models.Dish.findAll({});
-        res.json(dishes);
-    }
-    catch(error) {
-        next(error);
-    }
-})
-.post((req, res, next) => {
-    res.end('Will add the dish: ' + req.body.name + ' with details: ' + req.body.description);
-})
+.all(allAction)
+.get(getDishes)
+.post(addDish)
 .put((req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /dishes');
 })
-.delete((req, res, next) => {
-    res.end('Deleting all dishes');
-});
+.delete(deleteDishes);
 
 dishRouter.route('/:dishId')
-.get(async (req,res,next) => {
-    try {
-        const dish = await models.Dish.findOne({
-            where: {
-                id: req.params.dishId
-            }
-        });
-        const comments = await models.Comment.findAll({
-            where: {
-                dishId: req.params.dishId
-            }
-        })
-        res.json({
-            dish,
-            comments
-        });
-    }
-    catch(error) {
-        next(error);
-    }
-})
+.get(getDish)
 .post((req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /dishes/'+ req.params.dishId);
 })
+.put(updateDish)
+.delete(deleteDish);
+
+dishRouter.route('/:dishId/comments')
+.get(getDishComments)
+.post(addDishComment)
 .put((req, res, next) => {
-    res.write('Updating the dish: ' + req.params.dishId + '\n');
-    res.end('Will update the dish: ' + req.body.name + 
-            ' with details: ' + req.body.description);
+    res.statusCode = 403;
+    res.end('PUT operation not supported on /dishes/' + req.params.dishId + '/comments');
 })
-.delete((req, res, next) => {
-    res.end('Deleting dish: ' + req.params.dishId);
-});
+.delete(deleteDishComments);
+
+dishRouter.route('/:dishId/comments/:commentId')
+.get(getDishComment)
+.post((req, res, next) => {
+    res.statusCode = 403;
+    res.end('POST operation not supported on /dishes/'+ req.params.dishId
+        + '/comments/' + req.params.commentId);
+})
+.put(updateDishComment)
+.delete(deleteDishComment);
 
 module.exports = dishRouter;
