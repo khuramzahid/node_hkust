@@ -4,29 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-const User = require('./models/users');
-
-User.sync({force: true})
-.then(() => {
-  User.create({
-    firstName: 'John',
-    lastName: 'Hancock'
-  })
-  .then(() => {
-    User.findAll().then(users => {
-      console.log(users)
-    })
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-})
-.catch((err) => {
-  console.log(err);
+const models = require('./models');
+const Users = models.User.findOne({}).then((users) => {
+  console.log(users);
 });
-
-
-
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
