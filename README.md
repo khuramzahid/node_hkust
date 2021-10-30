@@ -3,9 +3,9 @@ CREATE DATABASE:
     CREATE DATABASE confusion;
     exit
 
-SEQUELIZE Migration Setup:
-    sequelize init
-    sequelize model:generate --name User --attributes firstName:string,lastName:string,email:string
+SEQUELIZE COMMANDS:
     sequelize db:migrate
-    sequelize seed:generate --name demo-user
     sequelize db:seed:all
+
+START APPLICATION:
+    npm start
