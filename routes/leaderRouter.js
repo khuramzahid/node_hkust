@@ -6,6 +6,10 @@ const leaderRouter = express.Router();
 leaderRouter.use(bodyParser.json());
 
 const {
+    authenticateToken
+} = require('../auth');
+
+const {
     allAction,
     getLeaders,
     addLeader,
@@ -16,7 +20,7 @@ const {
 } = require('../dao/leaders');
 
 leaderRouter.route('/')
-.all(allAction)
+.all(authenticateToken, allAction)
 .get(getLeaders)
 .post(addLeader)
 .put((req, res, next) => {

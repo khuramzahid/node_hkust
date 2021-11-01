@@ -1,7 +1,10 @@
+require('dotenv').config();
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
@@ -9,6 +12,8 @@ var usersRouter = require('./routes/users');
 var dishRouter = require('./routes/dishRouter');
 var promoRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
+
+let refreshTokens = [];
 
 var app = express();
 
@@ -21,51 +26,39 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser('12345-67890-09876-54321'));
 
-function auth (req, res, next) {
-  console.log(req.signedCookies);
-  if (!req.signedCookies.user) {
-    var authHeader = req.headers.authorization;
-    if (!authHeader) {
-      var err = new Error('You are not authenticated!');
-      res.setHeader('WWW-Authenticate', 'Basic');              
-      err.status = 401;
-      next(err);
-      return;
-    }
-    var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-    var user = auth[0];
-    var pass = auth[1];
-    if (user == 'admin' && pass == 'password') {
-      res.cookie('user','admin',{signed: true}); //sets cookie at client side (authHeader can be null)
-      next(); // authorized
-    } else {
-      var err = new Error('You are not authenticated!');
-      res.setHeader('WWW-Authenticate', 'Basic');              
-      err.status = 401;
-      next(err);
-    }
-  }
-  else {
-    if (req.signedCookies.user === 'admin') {
-      next();
-    }
-    else {
-      var err = new Error('You are not authenticated!');
-      err.status = 401;
-      next(err);
-    }
-  }
-}
-
-app.use(auth);
-
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.post('/token', (req, res) => {
+  const refreshToken = req.body.token;
+  console.log(refreshToken);
+  if (refreshToken == null) return res.sendStatus(401);
+  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    const accessToken = jwt.sign({ name: user.name }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
+    res.json({ accessToken: accessToken });
+  })
+});
+
+app.post('/login', (req, res) => {
+  const username = req.body.username;
+  const user = { name: username };
+  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '59s' });
+  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+  refreshTokens.push(refreshToken);
+  res.json({ accessToken: accessToken, refreshToken: refreshToken });
+});
+
+app.delete('/logout', (req, res) => {
+  refreshTokens = refreshTokens.filter(token => token !== req.body.token);
+  res.sendStatus(204);
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/dishes',dishRouter);
-app.use('/promotions',promoRouter);
-app.use('/leaders',leaderRouter);
+app.use('/dishes', dishRouter);
+app.use('/promotions', promoRouter);
+app.use('/leaders', leaderRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
