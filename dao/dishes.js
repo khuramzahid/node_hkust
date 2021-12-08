@@ -41,19 +41,22 @@ const addDish = async (req, res, next) => {
             updatedAt: new Date()
         }, { returning: true });
 
-        comments = comments.map(comment => {
-            return {
-                ...comment,
-                dishId: insertedDish.id,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            }
-        })
+        if(comments) {
+            comments = comments.map(comment => {
+                return {
+                    ...comment,
+                    dishId: insertedDish.id,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                }
+            });
+            await models.Comment.bulkCreate(
+                comments, 
+                { returning: true }
+            );
+        }
 
-        const insertedComments = await models.Comment.bulkCreate(
-            comments, 
-            { returning: true }
-        );
+        
         
         res.end('Added dish: ' + insertedDish.id);
     }
