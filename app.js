@@ -1,10 +1,7 @@
-require('dotenv').config();
-
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
@@ -12,8 +9,6 @@ var usersRouter = require('./routes/users');
 var dishRouter = require('./routes/dishRouter');
 var promoRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
-
-let refreshTokens = [];
 
 var app = express();
 
@@ -24,35 +19,8 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser('12345-67890-09876-54321'));
-
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.post('/token', (req, res) => {
-  const refreshToken = req.body.token;
-  console.log(refreshToken);
-  if (refreshToken == null) return res.sendStatus(401);
-  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
-  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    const accessToken = jwt.sign({ name: user.name }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
-    res.json({ accessToken: accessToken });
-  })
-});
-
-app.post('/login', (req, res) => {
-  const username = req.body.username;
-  const user = { name: username };
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '59s' });
-  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-  refreshTokens.push(refreshToken);
-  res.json({ accessToken: accessToken, refreshToken: refreshToken });
-});
-
-app.delete('/logout', (req, res) => {
-  refreshTokens = refreshTokens.filter(token => token !== req.body.token);
-  res.sendStatus(204);
-});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

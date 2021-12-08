@@ -6,10 +6,6 @@ const dishRouter = express.Router();
 dishRouter.use(bodyParser.json());
 
 const {
-    authenticateToken
-} = require('../auth');
-
-const {
     allAction,
     getDishes,
     addDish,
@@ -26,7 +22,7 @@ const {
 } = require('../dao/dishes');
 
 dishRouter.route('/')
-.all(authenticateToken, allAction)
+.all(allAction)
 .get(getDishes)
 .post(addDish)
 .put((req, res, next) => {

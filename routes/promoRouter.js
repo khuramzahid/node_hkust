@@ -6,10 +6,6 @@ const promoRouter = express.Router();
 promoRouter.use(bodyParser.json());
 
 const {
-    authenticateToken
-} = require('../auth');
-
-const {
     allAction,
     getPromotions,
     addPromotion,
@@ -20,7 +16,7 @@ const {
 } = require('../dao/promotions');
 
 promoRouter.route('/')
-.all(authenticateToken, allAction)
+.all(allAction)
 .get(getPromotions)
 .post(addPromotion)
 .put((req, res, next) => {
