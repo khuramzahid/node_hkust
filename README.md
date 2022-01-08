@@ -1,6 +1,7 @@
 CREATE DATABASE:
     sudo mysql;
     CREATE DATABASE confusion;
+    SET GLOBAL validate_password.policy=LOW;
     CREATE USER 'confuseduser'@'localhost' IDENTIFIED BY 'enigma123!';
     GRANT ALL ON confusion.* TO 'confuseduser'@'localhost' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
