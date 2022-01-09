@@ -1,4 +1,5 @@
 const express = require('express');
+const authenticate = require('../authenticate');
 
 const dishRouter = express.Router();
 
@@ -21,39 +22,39 @@ const {
 dishRouter.route('/')
 .all(allAction)
 .get(getDishes)
-.post(addDish)
-.put((req, res, next) => {
+.post(authenticate.verifyUser, addDish)
+.put(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /dishes');
 })
-.delete(deleteDishes);
+.delete(authenticate.verifyUser, deleteDishes);
 
 dishRouter.route('/:dishId')
 .get(getDish)
-.post((req, res, next) => {
+.post(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /dishes/'+ req.params.dishId);
 })
-.put(updateDish)
-.delete(deleteDish);
+.put(authenticate.verifyUser, updateDish)
+.delete(authenticate.verifyUser, deleteDish);
 
 dishRouter.route('/:dishId/comments')
 .get(getDishComments)
-.post(addDishComment)
-.put((req, res, next) => {
+.post(authenticate.verifyUser, addDishComment)
+.put(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /dishes/' + req.params.dishId + '/comments');
 })
-.delete(deleteDishComments);
+.delete(authenticate.verifyUser, deleteDishComments);
 
 dishRouter.route('/:dishId/comments/:commentId')
 .get(getDishComment)
-.post((req, res, next) => {
+.post(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /dishes/'+ req.params.dishId
         + '/comments/' + req.params.commentId);
 })
-.put(updateDishComment)
-.delete(deleteDishComment);
+.put(authenticate.verifyUser, updateDishComment)
+.delete(authenticate.verifyUser, deleteDishComment);
 
 module.exports = dishRouter;

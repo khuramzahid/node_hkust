@@ -1,4 +1,5 @@
 const express = require('express');
+var authenticate = require('../authenticate');
 
 const leaderRouter = express.Router();
 
@@ -15,20 +16,20 @@ const {
 leaderRouter.route('/')
 .all(allAction)
 .get(getLeaders)
-.post(addLeader)
-.put((req, res, next) => {
+.post(authenticate.verifyUser, addLeader)
+.put(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /leaders');
 })
-.delete(deleteLeaders);
+.delete(authenticate.verifyUser, deleteLeaders);
 
 leaderRouter.route('/:leaderId')
 .get(getLeader)
-.post((req, res, next) => {
+.post(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /leaders/'+ req.params.leaderId);
 })
-.put(updateLeader)
-.delete(deleteLeader);
+.put(authenticate.verifyUser, updateLeader)
+.delete(authenticate.verifyUser, deleteLeader);
 
 module.exports = leaderRouter;
