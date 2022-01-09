@@ -1,5 +1,5 @@
 var express = require('express');
-
+var passport = require('passport');
 const userRouter = express.Router();
 
 const {
@@ -10,7 +10,7 @@ const {
 
 userRouter
 .post('/signup', signupHandler)
-.post('/login', loginHandler)
+.post('/login', passport.authenticate('local'), loginHandler)
 .get('/logout', logoutHandler);
 
 module.exports = userRouter;
