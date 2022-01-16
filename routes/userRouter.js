@@ -1,13 +1,16 @@
 var express = require('express');
+var authenticate = require('../authenticate');
 var passport = require('passport');
 const userRouter = express.Router();
 
 const {
   signupHandler,
-  loginHandler
+  loginHandler,
+  getAllUsers
 } = require('../dao/users');
 
 userRouter
+.get('/', authenticate.verifyUser, authenticate.verifyAdmin, getAllUsers)
 .post('/signup', signupHandler)
 .post('/login', passport.authenticate('local'), loginHandler);
 // JWT auth is not like sessions. So no logout. 

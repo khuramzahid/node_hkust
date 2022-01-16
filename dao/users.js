@@ -31,7 +31,22 @@ const loginHandler = (req, res) => {
   res.json({success: true, token: token, status: 'You are successfully logged in!'});
 }
 
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await models.User.findAll({
+      attributes: ['id', 'username', 'admin']
+    });
+    res.json({
+      users
+    });
+  }
+  catch(error) {
+    next(error);
+  }
+}
+
 module.exports = {
     signupHandler,
-    loginHandler
+    loginHandler,
+    getAllUsers
 }

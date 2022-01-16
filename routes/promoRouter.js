@@ -16,20 +16,20 @@ const {
 promoRouter.route('/')
 .all(allAction)
 .get(getPromotions)
-.post(authenticate.verifyUser, addPromotion)
-.put(authenticate.verifyUser, (req, res, next) => {
+.post(authenticate.verifyUser, authenticate.verifyAdmin, addPromotion)
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /promotions');
 })
-.delete(authenticate.verifyUser, deletePromotions);
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, deletePromotions);
 
 promoRouter.route('/:promoId')
 .get(getPromotion)
-.post(authenticate.verifyUser, (req, res, next) => {
+.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /promotions/'+ req.params.promoId);
 })
-.put(authenticate.verifyUser, updatePromotion)
-.delete(authenticate.verifyUser, deletePromotion);
+.put(authenticate.verifyUser, authenticate.verifyAdmin, updatePromotion)
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, deletePromotion);
 
 module.exports = promoRouter;

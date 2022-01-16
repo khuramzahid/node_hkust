@@ -22,21 +22,21 @@ const {
 dishRouter.route('/')
 .all(allAction)
 .get(getDishes)
-.post(authenticate.verifyUser, addDish)
-.put(authenticate.verifyUser, (req, res, next) => {
+.post(authenticate.verifyUser, authenticate.verifyAdmin, addDish)
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /dishes');
 })
-.delete(authenticate.verifyUser, deleteDishes);
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, deleteDishes);
 
 dishRouter.route('/:dishId')
 .get(getDish)
-.post(authenticate.verifyUser, (req, res, next) => {
+.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /dishes/'+ req.params.dishId);
 })
-.put(authenticate.verifyUser, updateDish)
-.delete(authenticate.verifyUser, deleteDish);
+.put(authenticate.verifyUser, authenticate.verifyAdmin, updateDish)
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, deleteDish);
 
 dishRouter.route('/:dishId/comments')
 .get(getDishComments)
@@ -45,7 +45,7 @@ dishRouter.route('/:dishId/comments')
     res.statusCode = 403;
     res.end('PUT operation not supported on /dishes/' + req.params.dishId + '/comments');
 })
-.delete(authenticate.verifyUser, deleteDishComments);
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, deleteDishComments);
 
 dishRouter.route('/:dishId/comments/:commentId')
 .get(getDishComment)
