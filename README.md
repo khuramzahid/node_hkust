@@ -23,3 +23,11 @@ node REPL
 require('crypto').randomBytes(64).toString('hex')
 
 POST on POSTMAN body option x-www-form-urlencoded
+
+
+
+HTTPS:
+cd bin
+openssl genrsa 1024 > private.key
+openssl req -new -key private.key -out cert.csr
+openssl x509 -req -in cert.csr -signkey private.key -out certificate.pem
