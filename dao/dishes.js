@@ -181,7 +181,7 @@ const addDishComment = async (req, res, next) => {
             dishId: req.params.dishId,
             rating,
             comment,
-            author,
+            author: req.user.dataValues.username || author,
             createdAt: new Date(),
             updatedAt: new Date()
         }, { returning: true });
@@ -232,6 +232,18 @@ const updateDishComment = async (req, res, next) => {
             author
         } = req.body;
 
+        const savedComment = await models.Comment.findOne({
+            where: { 
+                id: req.params.commentId,
+                dishId: req.params.dishId
+            }
+        });
+
+        if(req.user.dataValues.username != savedComment.author) {
+            res.statusCode = 403;
+            res.end("You can't modify another user's comment.");
+        }
+
         const insertedComment = await models.Comment.update({
             rating,
             comment,
@@ -255,6 +267,18 @@ const updateDishComment = async (req, res, next) => {
 
 const deleteDishComment = async (req, res, next) => {
     try {
+        const savedComment = await models.Comment.findOne({
+            where: { 
+                dishId: req.params.dishId,
+                id: req.params.commentId
+            }
+        });
+
+        if(req.user.dataValues.username != savedComment.author) {
+            res.statusCode = 403;
+            res.end("You can't delete another user's comment.");
+        }
+
         await models.Comment.destroy({
             where: {
                 dishId: req.params.dishId,
