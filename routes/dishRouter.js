@@ -1,6 +1,6 @@
 const express = require('express');
 const authenticate = require('../authenticate');
-
+const cors = require('./cors');
 const dishRouter = express.Router();
 
 const {
@@ -20,41 +20,45 @@ const {
 } = require('../dao/dishes');
 
 dishRouter.route('/')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .all(allAction)
-.get(getDishes)
-.post(authenticate.verifyUser, authenticate.verifyAdmin, addDish)
-.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+.get(cors.cors, getDishes)
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, addDish)
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /dishes');
 })
-.delete(authenticate.verifyUser, authenticate.verifyAdmin, deleteDishes);
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, deleteDishes);
 
 dishRouter.route('/:dishId')
-.get(getDish)
-.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.cors, getDish)
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /dishes/'+ req.params.dishId);
 })
-.put(authenticate.verifyUser, authenticate.verifyAdmin, updateDish)
-.delete(authenticate.verifyUser, authenticate.verifyAdmin, deleteDish);
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, updateDish)
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, deleteDish);
 
 dishRouter.route('/:dishId/comments')
-.get(getDishComments)
-.post(authenticate.verifyUser, addDishComment)
-.put(authenticate.verifyUser, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.cors, getDishComments)
+.post(cors.corsWithOptions, authenticate.verifyUser, addDishComment)
+.put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /dishes/' + req.params.dishId + '/comments');
 })
-.delete(authenticate.verifyUser, authenticate.verifyAdmin, deleteDishComments);
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, deleteDishComments);
 
 dishRouter.route('/:dishId/comments/:commentId')
-.get(getDishComment)
-.post(authenticate.verifyUser, (req, res, next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.cors, getDishComment)
+.post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /dishes/'+ req.params.dishId
         + '/comments/' + req.params.commentId);
 })
-.put(authenticate.verifyUser, updateDishComment)
-.delete(authenticate.verifyUser, deleteDishComment);
+.put(cors.corsWithOptions, authenticate.verifyUser, updateDishComment)
+.delete(cors.corsWithOptions, authenticate.verifyUser, deleteDishComment);
 
 module.exports = dishRouter;
