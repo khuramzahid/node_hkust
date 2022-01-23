@@ -6,14 +6,16 @@ const cors = require('./cors');
 const {
   signupHandler,
   loginHandler,
-  getAllUsers
+  getAllUsers,
+  checkJWTtoken
 } = require('../dao/users');
 
 userRouter
-.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.options('*', cors.corsWithOptions, (req, res) => { res.sendStatus(200); } )
 .get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, getAllUsers)
 .post('/signup', cors.corsWithOptions, signupHandler)
-.post('/login', cors.corsWithOptions, passport.authenticate('local'), loginHandler);
+.post('/login', cors.corsWithOptions, loginHandler)
+.get('/checkJWTtoken', cors.corsWithOptions, checkJWTtoken);
 // JWT auth is not like sessions. So no logout. 
 // We do have the option to have token whitelist at server-side.
 // Logout would mean removing those tokens from that whitelist.

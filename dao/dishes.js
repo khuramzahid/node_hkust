@@ -2,13 +2,14 @@ const models = require('../models');
 
 const allAction = (req,res,next) => {
     res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
     next();
 }
 
 const getDishes = async (req,res,next) => {
     try {
+        console.log(req.query);
         const dishes = await models.Dish.findAll({});
+        res.setHeader('Content-Type', 'application/json');
         res.json(dishes);
     }
     catch(error) {
@@ -57,7 +58,7 @@ const addDish = async (req, res, next) => {
         }
 
         
-        
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Added dish: ' + insertedDish.id);
     }
     catch(error) {
@@ -73,6 +74,7 @@ const deleteDishes = async (req, res, next) => {
         await models.Comment.destroy({
             where: {}
         });
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Deleted all dishes.');
     }
     catch(error) {
@@ -91,7 +93,9 @@ const getDish = async (req,res,next) => {
             where: {
                 dishId: req.params.dishId
             }
-        })
+        });
+
+        res.setHeader('Content-Type', 'application/json');
         res.json({
             dish,
             comments
@@ -129,6 +133,7 @@ const updateDish = async (req, res, next) => {
             plain: true
         });
 
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Updated dish: ' + req.params.dishId);
     }
     catch(error) {
@@ -148,6 +153,8 @@ const deleteDish = async (req, res, next) => {
                 dishId: req.params.dishId
             }
         });
+
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Deleted dish: ' + req.params.dishId);
     }
     catch(error) {
@@ -162,6 +169,8 @@ const getDishComments = async (req,res,next) => {
                 dishId: req.params.dishId
             }
         });
+
+        res.setHeader('Content-Type', 'application/json');
         res.json(comments);
     }
     catch(error) {
@@ -185,7 +194,8 @@ const addDishComment = async (req, res, next) => {
             createdAt: new Date(),
             updatedAt: new Date()
         }, { returning: true });
-        
+
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Added comment: ' + insertedComment.id);
     }
     catch(error) {
@@ -200,6 +210,8 @@ const deleteDishComments = async (req, res, next) => {
                 dishId: req.params.dishId
             }
         });
+
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Deleted all comments for dish Id: ' + req.params.dishId);
     }
     catch(error) {
@@ -215,6 +227,8 @@ const getDishComment = async (req,res,next) => {
                 id: req.params.commentId
             }
         })
+
+        res.setHeader('Content-Type', 'application/json');
         res.json({
             comment
         });
@@ -258,6 +272,7 @@ const updateDishComment = async (req, res, next) => {
             plain: true
         });
 
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Updated dish comment: ' + req.params.commentId);
     }
     catch(error) {
@@ -285,6 +300,8 @@ const deleteDishComment = async (req, res, next) => {
                 id: req.params.commentId
             }
         });
+
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Deleted comment: ' + req.params.commentId);
     }
     catch(error) {

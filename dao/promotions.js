@@ -2,13 +2,15 @@ const models = require('../models');
 
 const allAction = (req,res,next) => {
     res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
     next();
 }
 
 const getPromotions = async (req,res,next) => {
     try {
+        console.log(req.query);
         const promotions = await models.Promotion.findAll({});
+
+        res.setHeader('Content-Type', 'application/json');
         res.json(promotions);
     }
     catch(error) {
@@ -38,6 +40,7 @@ const addPromotion = async (req, res, next) => {
             updatedAt: new Date()
         }, { returning: true });
 
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Added promo: ' + insertedPromotion.id);
     }
     catch(error) {
@@ -50,6 +53,8 @@ const deletePromotions = async (req, res, next) => {
         await models.Promotion.destroy({
             where: {}
         });
+
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Deleted all promotions.');
     }
     catch(error) {
@@ -64,6 +69,8 @@ const getPromotion = async (req,res,next) => {
                 id: req.params.promoId
             }
         });
+
+        res.setHeader('Content-Type', 'application/json');
         res.json(promo);
     }
     catch(error) {
@@ -96,6 +103,7 @@ const updatePromotion = async (req, res, next) => {
             plain: true
         });
 
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Updated promo: ' + req.params.promoId);
     }
     catch(error) {
@@ -110,6 +118,8 @@ const deletePromotion = async (req, res, next) => {
                 id: req.params.promoId
             }
         });
+        
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Deleted promo: ' + req.params.promoId);
     }
     catch(error) {

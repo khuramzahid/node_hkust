@@ -2,13 +2,15 @@ const models = require('../models');
 
 const allAction = (req,res,next) => {
     res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
     next();
 }
 
 const getLeaders = async (req,res,next) => {
     try {
+        console.log(req.query);
         const leaders = await models.Leader.findAll({});
+
+        res.setHeader('Content-Type', 'application/json');
         res.json(leaders);
     }
     catch(error) {
@@ -38,6 +40,7 @@ const addLeader = async (req, res, next) => {
             updatedAt: new Date()
         }, { returning: true });
         
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Added leader: ' + insertedLeader.id);
     }
     catch(error) {
@@ -50,6 +53,8 @@ const deleteLeaders = async (req, res, next) => {
         await models.Leader.destroy({
             where: {}
         });
+
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Deleted all leaders.');
     }
     catch(error) {
@@ -64,6 +69,8 @@ const getLeader = async (req,res,next) => {
                 id: req.params.leaderId
             }
         });
+
+        res.setHeader('Content-Type', 'application/json');
         res.json(leader);
     }
     catch(error) {
@@ -96,6 +103,7 @@ const updateLeader = async (req, res, next) => {
             plain: true
         });
 
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Updated leader: ' + req.params.leaderId);
     }
     catch(error) {
@@ -110,6 +118,8 @@ const deleteLeader = async (req, res, next) => {
                 id: req.params.leaderId
             }
         });
+
+        res.setHeader('Content-Type', 'text/plain');
         res.end('Deleted leader: ' + req.params.leaderId);
     }
     catch(error) {

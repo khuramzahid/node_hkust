@@ -7,6 +7,7 @@ const {
     allAction,
     getFavorites,
     addFavorite,
+    getFavorite,
     deleteFavorites,
     deleteFavorite
 } = require('../dao/favorites');
@@ -24,10 +25,7 @@ favoritesRouter.route('/')
 
 favoritesRouter.route('/:dishId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
-.get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    res.statusCode = 403;
-    res.end('GET operation not supported on /favorites/'+ req.params.dishId);
-})
+.get(cors.cors, authenticate.verifyUser, getFavorite)
 .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /favorites/'+ req.params.dishId);
