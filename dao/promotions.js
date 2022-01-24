@@ -7,8 +7,15 @@ const allAction = (req,res,next) => {
 
 const getPromotions = async (req,res,next) => {
     try {
-        console.log(req.query);
-        const promotions = await models.Promotion.findAll({});
+        let whereClause = {};
+        if(req.query != null) {
+            if(req.query.featured) {
+                whereClause = {...whereClause, featured: req.query.featured ? 1 : 0 };
+            }
+        } 
+        const promotions = await models.Promotion.findAll({
+            where: whereClause
+        });
 
         res.setHeader('Content-Type', 'application/json');
         res.json(promotions);

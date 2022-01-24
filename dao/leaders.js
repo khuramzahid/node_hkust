@@ -7,8 +7,15 @@ const allAction = (req,res,next) => {
 
 const getLeaders = async (req,res,next) => {
     try {
-        console.log(req.query);
-        const leaders = await models.Leader.findAll({});
+        let whereClause = {};
+        if(req.query != null) {
+            if(req.query.featured) {
+                whereClause = { ...whereClause, featured: req.query.featured ? 1 : 0 };
+            }
+        } 
+        const leaders = await models.Leader.findAll({
+            where: whereClause
+        });
 
         res.setHeader('Content-Type', 'application/json');
         res.json(leaders);

@@ -19,13 +19,13 @@ fxLayoutGap="10px">
 <div fxFlex *ngIf="favorites" [@expand]>
 <mat-grid-list cols="2" rowHeight="200px">
  <mat-grid-tile *ngFor="let dish of favorites.dishes">
-   <div [routerLink]="['/dishdetail', dish._id]" appHighlight>
+   <div [routerLink]="['/dishdetail', dish.id]" appHighlight>
    <img height="200px" src="{{baseURL + dish.image}}" alt={{dish.name}}>
    </div>
    <mat-grid-tile-footer>
      <h1 mat-line>{{dish.name | uppercase}}</h1>
      <span class="flex-spacer"></span>
-     <button mat-icon-button *ngIf="delete" (click)="deleteFavorite(dish._id)">
+     <button mat-icon-button *ngIf="delete" (click)="deleteFavorite(dish.id)">
        <span style="color: red;" class="fa fa-times fa-lg"></span>
      </button>
    </mat-grid-tile-footer>

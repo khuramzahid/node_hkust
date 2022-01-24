@@ -7,8 +7,20 @@ const allAction = (req,res,next) => {
 
 const getDishes = async (req,res,next) => {
     try {
-        console.log(req.query);
-        const dishes = await models.Dish.findAll({});
+        let whereClause = {};
+        if(req.query != null) {
+            if(req.query.featured) {
+                whereClause = { ...whereClause, featured: req.query.featured ? 1 : 0 };
+            }
+        } 
+        let dishes = await models.Dish.findAll({
+            where: whereClause
+        });
+        dishes = dishes.map(dish => {
+            dish.dataValues.comments = [];
+            return dish;
+        });
+
         res.setHeader('Content-Type', 'application/json');
         res.json(dishes);
     }
@@ -84,22 +96,20 @@ const deleteDishes = async (req, res, next) => {
 
 const getDish = async (req,res,next) => {
     try {
-        const dish = await models.Dish.findOne({
+        let dish = await models.Dish.findOne({
             where: {
                 id: req.params.dishId
             }
         });
-        const comments = await models.Comment.findAll({
+        let comments = await models.Comment.findAll({
             where: {
                 dishId: req.params.dishId
             }
         });
+        dish.dataValues.comments = comments;
 
         res.setHeader('Content-Type', 'application/json');
-        res.json({
-            dish,
-            comments
-        });
+        res.json(dish);
     }
     catch(error) {
         next(error);

@@ -42,7 +42,7 @@ const loginHandler = (req, res, next) => {
         res.json({success: false, status: 'Login Unsuccessful!', err: 'Could not log in user!'});          
       }
 
-      var token = authenticate.getToken({_id: req.user._id});
+      var token = authenticate.getToken({id: req.user.id});
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.json({success: true, status: 'Login Successful!', token: token});

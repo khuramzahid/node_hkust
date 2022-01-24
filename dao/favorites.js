@@ -46,7 +46,7 @@ const addFavorite = async (req, res, next) => {
     }
 }
 
-const getFavorite = (req,res,next) => {
+const getFavorite = async (req,res,next) => {
     const favorites = await models.Favorite.findOne({
         where: {
             userId: req.user.dataValues.id,
