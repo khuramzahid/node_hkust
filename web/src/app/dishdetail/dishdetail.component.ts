@@ -140,7 +140,9 @@ export class DishdetailComponent implements OnInit {
   addToFavorites() {
     if (!this.favorite) {
       this.favoriteService.postFavorite(this.dish.id)
-        .subscribe(favorites => { console.log(favorites); this.favorite = true; });
+        .subscribe(favorites => { 
+          this.favorite = true; 
+        });
     }
   }
 }

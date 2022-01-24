@@ -25,7 +25,7 @@ const addFavorite = async (req, res, next) => {
     try {
         let {
             dishId
-        } = req.body;
+        } = req.params;
 
         await models.Favorite.create({
             userId: req.user.dataValues.id,

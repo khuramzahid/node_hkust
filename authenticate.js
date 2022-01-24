@@ -18,19 +18,23 @@ var opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = config.secretKey;
 
-exports.jwtPassport = passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
-    models.User.findOne({
+exports.jwtPassport = passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
+    if(!jwt_payload.username) {
+        return done(null, false);
+    }
+
+    const user = await models.User.findOne({
         where: {
             username: jwt_payload.username
         }
-    }).then(user => {
-        if (user) {
-            return done(null, user);
-        }
-        else {
-            return done(null, false);
-        }
     });
+    
+    if (user) {
+        return done(null, user);
+    }
+    else {
+        return done(null, false);
+    }
 }));
 
 exports.verifyUser = passport.authenticate('jwt', {session: false});

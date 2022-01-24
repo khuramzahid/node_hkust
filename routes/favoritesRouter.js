@@ -16,7 +16,10 @@ favoritesRouter.route('/')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .all(allAction)
 .get(cors.corsWithOptions, authenticate.verifyUser, getFavorites)
-.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, addFavorite)
+.post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+    res.statusCode = 403;
+    res.end('POST operation not supported on /favorites');
+})
 .put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /favorites');
@@ -26,10 +29,7 @@ favoritesRouter.route('/')
 favoritesRouter.route('/:dishId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.cors, authenticate.verifyUser, getFavorite)
-.post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    res.statusCode = 403;
-    res.end('POST operation not supported on /favorites/'+ req.params.dishId);
-})
+.post(cors.corsWithOptions, authenticate.verifyUser, addFavorite)
 .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /favorites/'+ req.params.dishId);
